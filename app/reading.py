@@ -14,3 +14,4 @@ def read_db(db):
 def write_db(db, data):
     with open(db, 'w') as f:
         json.dump(data, f)
+
