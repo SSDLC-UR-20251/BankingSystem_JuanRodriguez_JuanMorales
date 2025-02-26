@@ -41,6 +41,18 @@ def encrypt_aes(texto, clave):
     # Devolver el texto cifrado y el nonce
     return texto_cifrado_str, nonce.hex()
 
+def hash_salt(texto,salt):
+    texto_bytes = texto.encode()
+    texto_bytes += salt
+    hash = SHA256.new(texto_bytes)
+    hash_result = hash.hexdigest()
+    return hash_result
+
+def comp_paswd(paswd,save_paswd,salt):
+    hash_paswd = hash_salt(paswd,salt)
+    return hash_paswd == save_paswd
+
+
 if __name__ == '__main__':
     texto = "Hola Mundo"
     clave = get_random_bytes(16)
