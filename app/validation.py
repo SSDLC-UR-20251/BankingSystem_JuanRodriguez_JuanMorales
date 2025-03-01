@@ -63,7 +63,7 @@ def validate_pswd(pswd):
     num_car = [35,42,64,36,37,38,45,33,43,61,63]
     valido_car = [chr(i) for i in num_car]
     
-     has_upper = has_lower = has_digit = has_special = False
+    has_upper = has_lower = has_digit = has_special = False
     
     for i in pswd:
         if i in valido_may:
