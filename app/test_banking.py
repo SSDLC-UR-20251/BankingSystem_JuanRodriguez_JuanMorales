@@ -6,15 +6,15 @@ import time
 import re
 
 driver = webdriver.Chrome()
-driver = driver.get("https://urban-spoon-qjqppxv46w63g6x-5000.app.github.dev/api/login")
+driver.get("http://127.0.0.1:5000/api/login")
 
 driver.find_element(By.ID,"email").send_keys("juanfer.morales@urosario.edu.co")
 driver.find_element(By.ID,"password").send_keys("Juan1234@")
-driver.find_element(By.ID,"").click()
+driver.find_element(By.ID,"Button").click()
 
 time.sleep(2)
 
-saldo_texto = driver.find_element(By.ID,"Saldo Usuario").text
+saldo_texto = driver.find_element(By.ID,"saldo_usuario").text
 saldo_inicial = float(saldo_texto.split(":")[-1].strip())
 
 driver.find_element(By.ID,"balance").send_keys("100")
