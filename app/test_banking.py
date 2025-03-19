@@ -17,6 +17,9 @@ time.sleep(2)
 saldo_texto = driver.find_element(By.ID,"saldo_usuario").text
 saldo_inicial = float(saldo_texto.split(":")[-1].strip())
 
+driver.find_element(By.ID,"deposit_button").click()
+
+
 driver.find_element(By.ID,"balance").send_keys("100")
 driver.find_element(By.ID,"deposit_button").click()
 
