@@ -34,7 +34,7 @@
                     <a class="nav-link" href="/records">My Account</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
+                    <a class="nav-link" href="/logout" id = "logout_button">Logout</a>
                 </li>
             </ul>
         </div>
@@ -42,7 +42,7 @@
 
     <div class="container mt-5">
         <!-- Page Title -->
-        <h1 class="text-center mb-4">Welcome, {{ nombre }}</h1>
+        <h1 class="text-center mb-4" id = "welcome_message">Welcome, {{ nombre }}</h1>
          <h4 class="card-title text-center"id="saldo_usuario">Your current balance: {{ balance }}</h4>
 
 
