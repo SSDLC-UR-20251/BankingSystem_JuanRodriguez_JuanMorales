@@ -99,8 +99,6 @@ class TestValidationFunctions(unittest.TestCase):
         self.assertFalse(validate_pswd("Pw1!"))  # Demasiado corta
         self.assertFalse(validate_pswd("A" * 36 + "1!"))  # Demasiado larga
 
-
-
 if __name__ == "__main__":
     unittest.main()
 
