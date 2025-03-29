@@ -1,6 +1,10 @@
 pipeline {
     agent any
     stages {
+        stage('Ejecutar pruebas de validación') {
+            steps {
+                bat 'python -m unittest validation.py'
+            }
         stage('Clonar código') {
             steps {
                 script {
@@ -22,6 +26,8 @@ pipeline {
             steps {
                 bat 'docker ps'
             }
+        }
+        
         }
     }
 }
