@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  security-check:
+  detect-secrets:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,14 +35,24 @@ jobs:
           name: secrets-scan-results
           path: secrets.json
 
-      - name: Set up Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: ".semgrep.yml"  # Si usas un archivo de reglas personalizado
+  semgrep-sast:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    needs: detect-secrets  # Este job depende de la ejecución del job detect-secrets
+    container:
+      # A Docker image with Semgrep installed. Do not change this.
+      image: semgrep/semgrep
 
-      - name: Run Semgrep SAST scan
-        uses: returntocorp/semgrep-action@v1
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      # Fetch project source with GitHub Actions Checkout. Use either v3 or v4.
+      - uses: actions/checkout@v4
+      # Run the "semgrep ci" command on the command line of the docker image.
+      - run: semgrep ci
         env:
+          # Connect to Semgrep AppSec Platform through your SEMGREP_APP_TOKEN.
+          # Generate a token from Semgrep AppSec Platform > Settings
+          # and add it to your GitHub secrets.
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-        with:
-          fail-on: error  # Hace que el build falle si se encuentran errores de severidad ERROR o WARNING
