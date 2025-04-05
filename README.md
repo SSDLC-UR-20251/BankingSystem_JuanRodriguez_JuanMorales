@@ -3,7 +3,6 @@
 ## 📝 Descripción  
 Para este laboratorio, se ha creado una aplicación sencilla que permite a los usuarios **registrar y visualizar información** mediante un formulario y una tabla de datos.  
 
-La aplicación está construida con **Flask** y consta de las siguientes partes clave:  
 
 - **Archivos HTML**:  
   - `form.html`: Presenta la interfaz para que los usuarios ingresen su información.  
