@@ -27,7 +27,7 @@ jobs:
       - name: Run detect-secrets scan
         id: secrets_scan
         run: |
-          detect-secrets scan --all-files --json > secrets.json
+          detect-secrets scan --all-files > secrets.json
 
       - name: Upload secrets scan results as artifact
         uses: actions/upload-artifact@main # Usar versión específica
