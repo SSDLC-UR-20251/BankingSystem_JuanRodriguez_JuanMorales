@@ -1,6 +1,3 @@
-name: 'detect-secrets Action'
-description: 'Scans your GitHub repository for accidentally committed secrets, enhances code security, and aids in secret cleanup.'
-
 on:
   push:
     branches:
