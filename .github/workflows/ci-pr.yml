@@ -78,7 +78,7 @@ jobs:
           fi
 
       - name: Upload secrets scan results as artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3
         with:
           name: secrets-scan-results
           path: secrets.json
