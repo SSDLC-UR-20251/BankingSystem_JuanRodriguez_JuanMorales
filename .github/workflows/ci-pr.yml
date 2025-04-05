@@ -1,4 +1,4 @@
-name: 'Detect Secrets Action'
+name: 'Security Checks: Detect Secrets + Semgrep SAST'
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  secret-detection:
+  security-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,8 +29,22 @@ jobs:
         run: |
           detect-secrets scan --all-files > secrets.json
 
+      - name: Fail if secrets are found
+        run: |
+          if grep -q '"results": {}' secrets.json; then
+            echo "✅ No secrets found"
+          else
+            echo "❌ Secrets detected!"
+            exit 1
+          fi
+
       - name: Upload secrets scan results as artifact
-        uses: actions/upload-artifact@main # Usar versión específica
+        uses: actions/upload-artifact@main
         with:
           name: secrets-scan-results
           path: secrets.json
+
+      - name: Run Semgrep SAST scan
+        uses: returntocorp/semgrep-action@v1
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
