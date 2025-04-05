@@ -49,6 +49,9 @@ jobs:
             exit 1
           fi
 
+      - name: Verify secrets.json exists
+        run: ls -l secrets.json
+
       - name: Upload secrets scan results as artifact
         uses: actions/upload-artifact@v3
         with:
