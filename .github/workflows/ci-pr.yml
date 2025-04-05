@@ -1,4 +1,4 @@
-name: 'Security Checks: Detect Secrets + Semgrep SAST'
+name: 'Security Checks: Detect Secrets + Semgrep SAST + SonarQube'
 
 on:
   push:
@@ -30,35 +30,34 @@ jobs:
           detect-secrets scan --all-files > secrets.json
 
       - name: Upload secrets scan results as artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         with:
           name: secrets-scan-results
           path: secrets.json
 
   semgrep-sast:
-    name: semgrep/ci
     runs-on: ubuntu-latest
     needs: detect-secrets  # Este job depende de la ejecución del job detect-secrets
-    container:
-      # A Docker image with Semgrep installed. Do not change this.
-      image: semgrep/semgrep
-
-    # Skip any PR created by dependabot to avoid permission issues:
-    if: (github.actor != 'dependabot[bot]')
-
     steps:
-      # Fetch project source with GitHub Actions Checkout. Use either v3 or v4.
-      - uses: actions/checkout@v4
-      # Run the "semgrep ci" command on the command line of the docker image.
-      - run: semgrep ci
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: ".semgrep.yml"  # Si usas un archivo de reglas personalizado
+
+      - name: Run Semgrep SAST scan
+        uses: returntocorp/semgrep-action@v1
         env:
-          # Connect to Semgrep AppSec Platform through your SEMGREP_APP_TOKEN.
-          # Generate a token from Semgrep AppSec Platform > Settings
-          # and add it to your GitHub secrets.
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}  # Asegúrate de que el token esté aquí
+        with:
+          fail-on: error  # Esto hará que el build falle si Semgrep encuentra errores
+
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
+    needs: semgrep-sast  # Este job depende de la ejecución del job semgrep-sast
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,4 +65,4 @@ jobs:
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
