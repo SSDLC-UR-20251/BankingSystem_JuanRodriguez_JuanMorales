@@ -69,7 +69,13 @@ jobs:
           fi
         
       - name: Verify secrets.json exists
-        run: ls -l secrets.json
+        run: |
+          if [ ! -f secrets.json ]; then
+            echo "⚠️ secrets.json no existe. Asegúrate de que la herramienta detect-secrets esté generando el archivo correctamente."
+          exit 1
+          else
+          ls -l secrets.json
+          fi
 
       - name: Upload secrets scan results as artifact
         uses: actions/upload-artifact@v3.1.0
