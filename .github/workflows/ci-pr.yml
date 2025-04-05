@@ -29,22 +29,20 @@ jobs:
         run: |
           detect-secrets scan --all-files > secrets.json
 
-      - name: Fail if secrets are found
-        run: |
-          if grep -q '"results": {}' secrets.json; then
-            echo "✅ No secrets found"
-          else
-            echo "❌ Secrets detected!"
-            exit 1
-          fi
-
       - name: Upload secrets scan results as artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         with:
           name: secrets-scan-results
           path: secrets.json
+
+      - name: Set up Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: ".semgrep.yml"  # Si usas un archivo de reglas personalizado
 
       - name: Run Semgrep SAST scan
         uses: returntocorp/semgrep-action@v1
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        with:
+          fail-on: error  # Hace que el build falle si se encuentran errores de severidad ERROR o WARNING
