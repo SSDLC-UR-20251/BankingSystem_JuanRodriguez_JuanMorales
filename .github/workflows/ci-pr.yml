@@ -1,3 +1,4 @@
+name:'detect-secrets Action'
 on:
   push:
     branches:
