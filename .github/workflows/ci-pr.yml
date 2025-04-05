@@ -66,3 +66,6 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectKey: "SSDLC-UR-20251_BankingSystem_JuanRodriguez_JuanMorales"
+          organization: "sonar.organization = ssdlc-ur-20251"
