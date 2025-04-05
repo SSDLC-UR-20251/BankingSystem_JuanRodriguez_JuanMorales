@@ -30,7 +30,7 @@ jobs:
           detect-secrets --scan . --json > secrets.json
 
       - name: Upload secrets scan results as artifact
-        uses: actions/upload-artifact@v3.1.3  # Usar versión específica
+        uses: actions/upload-artifact@main # Usar versión específica
         with:
           name: secrets-scan-results
           path: secrets.json
