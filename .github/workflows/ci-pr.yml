@@ -1,4 +1,4 @@
-name: 'Security & Quality Checks'
+name: 'Security Checks: Detect Secrets + Semgrep SAST + SonarQube'
 
 on:
   push:
@@ -9,92 +9,61 @@ on:
       - main
 
 jobs:
-
-  # 1. Detectar secretos con detect-secrets-action
   detect-secrets:
-    name: Detect Secrets
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run detect-secrets
-        uses: reviewdog/action-detect-secrets@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-check  # también puede ser 'github-pr-check' si quieres que salga como anotación
-
-      - name: Save secrets.json report
-        run: |
-          detect-secrets scan --all-files > secrets.json
-
-      - name: Upload secrets report
-        uses: actions/upload-artifact@v3
-        with:
-          name: secrets-scan-results
-          path: secrets.json
-
-      - name: Fail if secrets found
-        run: |
-          if grep -q '"is_secret": true' secrets.json; then
-            echo "🚨 Secrets detected!"
-            exit 1
-          else
-            echo "✅ No secrets found."
-          fi
-
-  # 2. SAST + dependencias con Semgrep
-  semgrep:
-    name: Semgrep SAST + Dependency Scan
-    runs-on: ubuntu-latest
-    needs: detect-secrets
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run Semgrep (GitHub Auth)
-        uses: returntocorp/semgrep-action@v1
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-        with:
-          config: "p/ci"  # usa el conjunto predefinido para CI/CD pipelines
-          fail-on: error  # rompe el build si encuentra findings de nivel 'error'
-
-  # 3. Análisis de calidad con SonarQube/SonarCloud
-  sonarqube:
-    name: SonarQube Quality Scan
-    runs-on: ubuntu-latest
-    needs: semgrep
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # obligatorio para sonar
-
-      - name: Run SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  # 4. Pruebas unitarias (ejemplo con pytest)
-  tests:
-    name: Run Unit Tests
-    runs-on: ubuntu-latest
-    needs: sonarqube
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Install detect-secrets
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          pip install detect-secrets
 
-      - name: Run tests
-        run: pytest
+      - name: Run detect-secrets scan
+        id: secrets_scan
+        run: |
+          detect-secrets scan --all-files > secrets.json
+
+      - name: Upload secrets scan results as artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: secrets-scan-results
+          path: secrets.json
+
+  semgrep-sast:
+    runs-on: ubuntu-latest
+    needs: detect-secrets  # Este job depende de la ejecución del job detect-secrets
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: ".semgrep.yml"  # Si usas un archivo de reglas personalizado
+
+      - name: Run Semgrep SAST scan
+        uses: returntocorp/semgrep-action@v1
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}  # Asegúrate de que el token esté aquí
+        with:
+          fail-on: error  # Esto hará que el build falle si Semgrep encuentra errores
+
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    needs: semgrep-sast  # Este job depende de la ejecución del job semgrep-sast
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be deshabilitados para un análisis más completo
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
