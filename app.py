@@ -1,19 +1,26 @@
-import sys
+#Incorrect unhashable class
+class MyMutableThing(object):
+    
+    def __init__(self):
+        pass
+    
+    def __hash__(self):
+        raise NotImplementedError("%r is unhashable" % self)
 
-def redirect_to_file(function, args, kwargs, filename):
-    with open(filename) as out:
-        orig_stdout = sys.stdout
-        sys.stdout = out
-        try:
-            function(*args, **kwargs)
-        finally:
-            sys.stdout = orig_stdout
+#Make class unhashable in the standard way
+class MyCorrectMutableThing(object):
+    
+    def __init__(self):
+        pass
+    
+    __hash__ = None
 
-def modifies_locals_sum(x, y):
-    locals()['z'] = x + y
-    #z will not be defined as modifications to locals() do not alter the local variables.
-    return z
 
-def fixed_sum(x, y):
-    z = x + y
-    return z
+class Abstract(object):
+
+    def wrong(self):
+        # Will raise a TypeError
+        raise NotImplemented()
+
+    def right(self):
+        raise NotImplementedError()
