@@ -1,20 +1,19 @@
-def unsafe_apply_function():
-    # Vulnerabilidad: uso de 'apply' (deprecado en Python 3, peligroso si se imita el comportamiento)
-    def multiply(x, y):
-        return x * y
+import sys
 
-    args = (5, 6)
-    result = apply(multiply, args)  # <-- Vulnerabilidad detectada por CodeQL
-    print("Resultado:", result)
+def redirect_to_file(function, args, kwargs, filename):
+    with open(filename) as out:
+        orig_stdout = sys.stdout
+        sys.stdout = out
+        try:
+            function(*args, **kwargs)
+        finally:
+            sys.stdout = orig_stdout
 
-def break_in_finally():
-    try:
-        print("Intentando hacer algo riesgoso...")
-        1 / 0  # Forzamos un error
-    finally:
-        print("En finally...")
-        break  # <-- Vulnerabilidad: break dentro de finally (SyntaxError pero aún analizable por CodeQL)
+def modifies_locals_sum(x, y):
+    locals()['z'] = x + y
+    #z will not be defined as modifications to locals() do not alter the local variables.
+    return z
 
-if __name__ == "__main__":
-    unsafe_apply_function()
-    break_in_finally()
+def fixed_sum(x, y):
+    z = x + y
+    return z
