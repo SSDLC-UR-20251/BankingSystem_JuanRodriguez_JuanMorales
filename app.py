@@ -1,15 +1,16 @@
-import random
+def raise_tuple():
+    ex = Exception, "Important diagnostic information"
+    raise ex
 
-def write_random_to_file():
-    no = random.randint(1, 10)
-    with open("random.txt", "w") as file:
-        file.write(str(no))
-    return no
+# We know that a^2 + b^2 = c^2, and wish to use this to compute c
+from math import sqrt, hypot
 
-def write_random():
-    random_no = write_random_to_file()
-    print "A random number was written to random.txt"
+a = 3e154 # a^2 > 1e308
+b = 4e154 # b^2 > 1e308
+# with these, c = 5e154 which is less that 1e308
 
-def surplus_argument():
-    the_format = "{spam} {eggs}" # Used to be "{spam} {eggs} {chips}"
-    return the_format.format(spam = "spam", eggs="eggs", chips="chips")
+def longSideDirect():
+    return sqrt(a**2 + b**2) # this will overflow
+
+def longSideBuiltin():
+    return hypot(a, b) # better to use built-in function
