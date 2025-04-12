@@ -1,18 +1,20 @@
-import python
-from Stmt s, string kind
-private import semmle.python.types.Builtins
-from CallNode call, ControlFlowNode func
+def unsafe_apply_function():
+    # Vulnerabilidad: uso de 'apply' (deprecado en Python 3, peligroso si se imita el comportamiento)
+    def multiply(x, y):
+        return x * y
 
-where major_version() = 2 and call.getFunction() = func and func.pointsTo(Value::named("apply"))
-select call, "Call to the obsolete builtin function 'apply'."
+    args = (5, 6)
+    result = apply(multiply, args)  # <-- Vulnerabilidad detectada por CodeQL
+    print("Resultado:", result)
 
-where
-  s instanceof Return and kind = "return" and exists(Try t | t.getFinalbody().contains(s))
-  or
-  s instanceof Break and
-  kind = "break" and
-  exists(Try t | t.getFinalbody().contains(s) |
-    not exists(For loop | loop.contains(s) and t.getFinalbody().contains(loop)) and
-    not exists(While loop | loop.contains(s) and t.getFinalbody().contains(loop))
-  )
-select s, "'" + kind + "' in a finally block will swallow any exceptions raised."
+def break_in_finally():
+    try:
+        print("Intentando hacer algo riesgoso...")
+        1 / 0  # Forzamos un error
+    finally:
+        print("En finally...")
+        break  # <-- Vulnerabilidad: break dentro de finally (SyntaxError pero aún analizable por CodeQL)
+
+if __name__ == "__main__":
+    unsafe_apply_function()
+    break_in_finally()
