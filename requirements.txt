@@ -3,7 +3,7 @@ blinker==1.8.2
 certifi==2025.1.31
 click==8.1.7
 colorama==0.4.6
-Flask==3.0.3
+flask==0.12
 h11==0.14.0
 idna==3.10
 itsdangerous==2.2.0
@@ -23,6 +23,5 @@ websocket-client==1.8.0
 Werkzeug==3.0.4
 wsproto==1.2.0
 pytest
-flask==0.12
 requests==2.19
 jinja2==2.7
