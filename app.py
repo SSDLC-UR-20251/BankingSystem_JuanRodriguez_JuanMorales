@@ -1,26 +1,15 @@
-#Incorrect unhashable class
-class MyMutableThing(object):
-    
-    def __init__(self):
-        pass
-    
-    def __hash__(self):
-        raise NotImplementedError("%r is unhashable" % self)
+import random
 
-#Make class unhashable in the standard way
-class MyCorrectMutableThing(object):
-    
-    def __init__(self):
-        pass
-    
-    __hash__ = None
+def write_random_to_file():
+    no = random.randint(1, 10)
+    with open("random.txt", "w") as file:
+        file.write(str(no))
+    return no
 
+def write_random():
+    random_no = write_random_to_file()
+    print "A random number was written to random.txt"
 
-class Abstract(object):
-
-    def wrong(self):
-        # Will raise a TypeError
-        raise NotImplemented()
-
-    def right(self):
-        raise NotImplementedError()
+def surplus_argument():
+    the_format = "{spam} {eggs}" # Used to be "{spam} {eggs} {chips}"
+    return the_format.format(spam = "spam", eggs="eggs", chips="chips")
