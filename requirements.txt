@@ -20,6 +20,6 @@ trio-websocket==0.12.2
 typing_extensions==4.13.0
 urllib3==2.3.0
 websocket-client==1.8.0
-Werkzeug==3.0.4
+Werkzeug==3.0.6
 wsproto==1.2.0
 pytest
