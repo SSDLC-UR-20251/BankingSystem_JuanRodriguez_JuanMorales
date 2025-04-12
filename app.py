@@ -17,3 +17,4 @@ def safe_connect():
     # ... interaction with server
 
     client.close()
+assert subprocess.call(['run-backup']) == 0
