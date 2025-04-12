@@ -13,7 +13,7 @@ import sys
 import os
 import tarfile
 
-AWS_SECRET_KEY= "FAKESECRET123"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
 def is_within_directory(directory, target):
     abs_directory = os.path.abspath(directory)
