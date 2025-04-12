@@ -24,6 +24,6 @@ Werkzeug==3.0.4
 wsproto==1.2.0
 pytest
 flask==0.12
-requests==2.19
+requests==2.32.2
 jinja2==2.7
 
