@@ -17,4 +17,10 @@ def safe_connect():
     # ... interaction with server
 
     client.close()
-assert subprocess.call(['run-backup']) == 0
+import sys
+import tarfile
+
+with tarfile.open(sys.argv[1]) as tar:
+    #BAD : This could write any file on the filesystem.
+    for entry in tar:
+        tar.extract(entry, "/tmp/unpack/")
